@@ -1,3 +1,6 @@
+using MeuLivroDeReceitas.Api.Filtros;
+using MeuLivroDeReceitas.Application;
+using MeuLivroDeReceitas.Application.Servico.Automapper;
 using MeuLivroDeReceitas.Domain.Extension;
 using MeuLivroDeReceitas.Infrastructure;
 using MeuLivroDeReceitas.Infrastructure.Migrations;
@@ -8,6 +11,7 @@ using Microsoft.Extensions.Hosting;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddRouting(opt => opt.LowercaseUrls = true);
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -15,6 +19,12 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddRepositorio(builder.Configuration);
+
+builder.Services.AddApplication(builder.Configuration);
+
+builder.Services.AddMvc(opt => opt.Filters.Add(typeof(FiltroDasExceptions)));
+
+builder.Services.AddScoped(provider => new AutoMapper.MapperConfiguration(opt => opt.AddProfile(new AutoMapperConfig())).CreateMapper());
 
 var app = builder.Build();
 
